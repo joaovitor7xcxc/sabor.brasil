@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receitas Brasil</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+
+<body data-user='{{ usuario | tojson | default("null") }}'>
+
+<nav class="topo">
+  <div class="marca">
+    🍲 <strong>Receitas Brasileiras</strong>
+  </div>
+
+  <div class="acoes-topo">
+    <span id="user-info"></span>
+    <button id="btn-login" onclick="abrirModalLogin()">Entrar</button>
+    <button id="btn-cadastrar" onclick="abrirModalCadastro()">Cadastrar</button>
+    <button id="btn-sair" style="display:none" onclick="logout()">Sair</button>
+  </div>
+</nav>
+
+<section class="conteudo">
+
+  <div class="cabecalho-receitas">
+    <h1>Receitas populares 🇧🇷</h1>
+    {% if usuario and usuario.perfil == 'admin' %}
+    <button onclick="abrirModalAdicionar()">➕ Adicionar Receita</button>
+    {% endif %}
+  </div>
+
+  <div class="cards">
+
+    {% for r in receitas %}
+    <div class="card">
+
+      <div class="img">{{ r.imagem }}</div>
+
+      <div class="info">
+        <h2>{{ r.titulo }}</h2>
+        <p>{{ r.descricao }}</p>
+      </div>
+
+      <div class="acoes">
+        <button onclick="curtir({{ r.id }}, this)">
+          ❤️ <span>{{ r.curtidas | length }}</span>
+        </button>
+
+        <button onclick="abrirComentarios({{ r.id }})">
+          💬 {{ r.comentarios | length }}
+        </button>
+
+        {% if usuario and usuario.perfil == 'admin' %}
+        <button onclick="deletarReceita({{ r.id }})">🗑️</button>
+        {% endif %}
+      </div>
+
+      <div class="comentarios" id="c-{{ r.id }}">
+        <input type="text" id="input-{{ r.id }}" placeholder="Comentar...">
+        <button onclick="comentar({{ r.id }})">Enviar</button>
+
+        <div class="lista">
+          {% for c in r.comentarios %}
+          <div id="cm-{{ c.id }}">
+            <b>@{{ c.autor_nickname }}</b>
+            <p>{{ c.texto }}</p>
+
+            {% if usuario and (usuario.id == c.autor_id or usuario.perfil == 'admin') %}
+            <button onclick="removerComentario({{ c.id }})">X</button>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="box">
+
+    <button onclick="fecharModal()">X</button>
+
+    <div>
+      <button onclick="mostrarLogin()">Entrar</button>
+      <button onclick="mostrarCadastro()">Cadastrar</button>
+    </div>
+
+    <div id="login-box">
+      <input id="login-user" placeholder="nickname">
+      <input id="login-pass" type="password" placeholder="senha">
+      <button onclick="fazerLogin()">Entrar</button>
+    </div>
+
+    <div id="cadastro-box" style="display:none;">
+      <input id="cad-user" placeholder="nickname">
+      <input id="cad-pass" type="password" placeholder="senha">
+      <button onclick="cadastrar()">Cadastrar</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal" id="modal-adicionar">
+  <div class="box">
+    <button onclick="fecharModalAdicionar()">X</button>
+
+    <input id="titulo-receita" placeholder="Título">
+    <textarea id="descricao-receita" placeholder="Descrição"></textarea>
+    <input id="imagem-receita" placeholder="Emoji">
+
+    <button onclick="adicionarReceita()">Adicionar</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
