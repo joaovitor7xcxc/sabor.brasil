@@ -1,125 +1,457 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Receitas Brasil</title>
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sabor do Brasil</title>
+  <link rel="stylesheet" href="/static/index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </head>
-
-<body data-user='{{ usuario | tojson | default("null") }}'>
-
-<nav class="topo">
-  <div class="marca">
-    🍲 <strong>Receitas Brasileiras</strong>
-  </div>
-
-  <div class="acoes-topo">
-    <span id="user-info"></span>
-    <button id="btn-login" onclick="abrirModalLogin()">Entrar</button>
-    <button id="btn-cadastrar" onclick="abrirModalCadastro()">Cadastrar</button>
-    <button id="btn-sair" style="display:none" onclick="logout()">Sair</button>
-  </div>
-</nav>
-
-<section class="conteudo">
-
-  <div class="cabecalho-receitas">
-    <h1>Receitas populares 🇧🇷</h1>
-    {% if usuario and usuario.perfil == 'admin' %}
-    <button onclick="abrirModalAdicionar()">➕ Adicionar Receita</button>
-    {% endif %}
-  </div>
-
-  <div class="cards">
-
-    {% for r in receitas %}
-    <div class="card">
-
-      <div class="img">{{ r.imagem }}</div>
-
-      <div class="info">
-        <h2>{{ r.titulo }}</h2>
-        <p>{{ r.descricao }}</p>
-      </div>
-
-      <div class="acoes">
-        <button onclick="curtir({{ r.id }}, this)">
-          ❤️ <span>{{ r.curtidas | length }}</span>
-        </button>
-
-        <button onclick="abrirComentarios({{ r.id }})">
-          💬 {{ r.comentarios | length }}
-        </button>
-
-        {% if usuario and usuario.perfil == 'admin' %}
-        <button onclick="deletarReceita({{ r.id }})">🗑️</button>
-        {% endif %}
-      </div>
-
-      <div class="comentarios" id="c-{{ r.id }}">
-        <input type="text" id="input-{{ r.id }}" placeholder="Comentar...">
-        <button onclick="comentar({{ r.id }})">Enviar</button>
-
-        <div class="lista">
-          {% for c in r.comentarios %}
-          <div id="cm-{{ c.id }}">
-            <b>@{{ c.autor_nickname }}</b>
-            <p>{{ c.texto }}</p>
-
-            {% if usuario and (usuario.id == c.autor_id or usuario.perfil == 'admin') %}
-            <button onclick="removerComentario({{ c.id }})">X</button>
-            {% endif %}
+<body>
+<div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
           </div>
-          {% endfor %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</div>
+  <!-- ═══════════════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════════════ -->
+  <header>
+    <a href="/" class="logo">
+      <span class="logo-emoji">🍽️</span>
+      <span class="logo-text">Sabor do Brasil</span>
+    </a>
+
+    <div class="nav-acoes">
+      <span id="info-usuario"></span>
+      <span id="badge-perfil"></span>
+      <button id="btn-abrir-modal" class="btn btn-branco" onclick="abrirModal('login')">
+        🔑 Entrar / Cadastrar
+      </button>
+      <button id="btn-logout" class="btn btn-branco" style="display:none" onclick="fazerLogout()">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+       CONTEÚDO PRINCIPAL
+  ═══════════════════════════════════════════════════ -->
+  <main>
+    <h1 class="secao-titulo">Receitas em Destaque 🇧🇷</h1>
+    <p class="secao-subtitulo">Explore, curta e comente as melhores receitas brasileiras.</p>
+
+    <div class="grid-receitas">
+      {% for receita in receitas %}
+      <div class="card-receita" data-id="{{ receita.id }}">
+
+        <div class="card-imagem">{{ receita.imagem }}</div>
+
+        <div class="card-corpo">
+          <h2 class="card-titulo">{{ receita.titulo }}</h2>
+          <p class="card-descricao">{{ receita.descricao }}</p>
+
+          <div class="card-acoes">
+            <!-- Botão Curtir -->
+            <button
+              class="btn-curtir {% if usuario and usuario.nickname in receita.curtidas %}ativo{% endif %}"
+              onclick="curtir({{ receita.id }}, this)"
+              data-receita="{{ receita.id }}"
+            >
+              ❤️ <span class="contador-curtida">{{ receita.curtidas | length }}</span>
+            </button>
+
+            <!-- Botão Comentar (toggle) -->
+            <button
+              class="btn-comentar"
+              onclick="toggleComentarios({{ receita.id }})"
+            >
+              💬 {{ receita.comentarios | length }}
+            </button>
+          </div>
         </div>
+
+        <!-- Seção de Comentários -->
+        <div class="secao-comentarios" id="comentarios-{{ receita.id }}">
+          <!-- Formulário de novo comentário -->
+          <div class="form-comentario">
+            <input
+              type="text"
+              placeholder="Escreva um comentário..."
+              id="input-comentario-{{ receita.id }}"
+              onkeydown="if(event.key==='Enter') enviarComentario({{ receita.id }})"
+            />
+            <button class="btn btn-laranja" onclick="enviarComentario({{ receita.id }})">
+              Enviar
+            </button>
+          </div>
+
+          <!-- Lista de comentários existentes -->
+          <div class="lista-comentarios" id="lista-{{ receita.id }}">
+            {% for comentario in receita.comentarios %}
+            <div class="item-comentario" id="comentario-{{ comentario.id }}">
+              <div>
+                <div class="comentario-autor">@{{ comentario.autor_nickname }}</div>
+                <div class="comentario-texto">{{ comentario.texto }}</div>
+              </div>
+              {% if usuario and (usuario.perfil == 'admin' or usuario.id == comentario.autor_id) %}
+              <button
+                class="btn btn-perigo"
+                onclick="excluirComentario({{ comentario.id }})"
+                title="Excluir comentário"
+              >
+                🗑
+              </button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL DE LOGIN / CADASTRO
+       (Dispara automaticamente ao tentar curtir/comentar sem login)
+  ═══════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay" onclick="fecharModalAoClicarFora(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+
+      <div class="modal-cabecalho">
+        <h2 class="modal-titulo" id="modal-titulo">Bem-vindo! 👋</h2>
+        <button class="btn-fechar-modal" onclick="fecharModal()" aria-label="Fechar modal">✕</button>
+      </div>
+
+      <!-- Tabs: Login / Cadastro -->
+      <div class="tabs" role="tablist">
+        <button class="tab ativa" id="tab-login"    onclick="trocarTab('login')"    role="tab">Entrar</button>
+        <button class="tab"       id="tab-cadastro" onclick="trocarTab('cadastro')" role="tab">Cadastrar</button>
+      </div>
+
+      <!-- ── PAINEL LOGIN ────────────────────── -->
+      <div class="painel-form ativo" id="painel-login">
+        <div class="grupo-campo">
+          <label for="login-nickname">Nickname</label>
+          <input type="text" id="login-nickname" placeholder="seu_nickname" autocomplete="username" />
+        </div>
+        <div class="grupo-campo">
+          <label for="login-senha">Senha</label>
+          <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter') submeterLogin()" />
+        </div>
+
+        <!-- Mensagem de erro do login -->
+        <div class="msg-erro" id="erro-login">
+          ⚠️ <span id="texto-erro-login"></span>
+        </div>
+
+        <button class="btn-submit-modal" onclick="submeterLogin()">Entrar</button>
+      </div>
+
+      <!-- ── PAINEL CADASTRO ─────────────────── -->
+      <div class="painel-form" id="painel-cadastro">
+        <div class="grupo-campo">
+          <label for="cadastro-nickname">Nickname</label>
+          <input type="text" id="cadastro-nickname" placeholder="escolha_seu_nickname" autocomplete="username" />
+        </div>
+        <div class="grupo-campo">
+          <label for="cadastro-senha">Senha</label>
+          <input type="password" id="cadastro-senha" placeholder="••••••••" autocomplete="new-password" />
+        </div>
+
+        <!-- Mensagem de erro/sucesso do cadastro -->
+        <div class="msg-erro"    id="erro-cadastro"><span id="texto-erro-cadastro"></span></div>
+        <div class="msg-sucesso" id="sucesso-cadastro"></div>
+
+        <button class="btn-submit-modal" onclick="submeterCadastro()">Criar Conta</button>
       </div>
 
     </div>
-    {% endfor %}
-
   </div>
-</section>
 
-<div class="modal" id="modal">
-  <div class="box">
 
-    <button onclick="fecharModal()">X</button>
+  <!-- ═══════════════════════════════════════════════════
+       JAVASCRIPT — LÓGICA DO FRONT-END
+  ═══════════════════════════════════════════════════ -->
+  <script>
+    // ─── Estado da sessão (sincronizado com Flask) ──────────────────────────
+    let usuarioAtual = {{ usuario | tojson }};
 
-    <div>
-      <button onclick="mostrarLogin()">Entrar</button>
-      <button onclick="mostrarCadastro()">Cadastrar</button>
-    </div>
+    // Atualiza o header com os dados do usuário logado
+    function atualizarHeader() {
+      const btnAbrir  = document.getElementById("btn-abrir-modal");
+      const btnLogout = document.getElementById("btn-logout");
+      const infoUsuario = document.getElementById("info-usuario");
+      const badgePerfil = document.getElementById("badge-perfil");
 
-    <div id="login-box">
-      <input id="login-user" placeholder="nickname">
-      <input id="login-pass" type="password" placeholder="senha">
-      <button onclick="fazerLogin()">Entrar</button>
-    </div>
+      if (usuarioAtual) {
+        btnAbrir.style.display  = "none";
+        btnLogout.style.display = "inline-flex";
+        infoUsuario.textContent = `@${usuarioAtual.nickname}`;
+        badgePerfil.textContent = usuarioAtual.perfil;
+        badgePerfil.style.display = "inline-block";
+      } else {
+        btnAbrir.style.display  = "inline-flex";
+        btnLogout.style.display = "none";
+        infoUsuario.textContent = "";
+        badgePerfil.style.display = "none";
+      }
+    }
 
-    <div id="cadastro-box" style="display:none;">
-      <input id="cad-user" placeholder="nickname">
-      <input id="cad-pass" type="password" placeholder="senha">
-      <button onclick="cadastrar()">Cadastrar</button>
-    </div>
+    atualizarHeader();
 
-  </div>
-</div>
 
-<div class="modal" id="modal-adicionar">
-  <div class="box">
-    <button onclick="fecharModalAdicionar()">X</button>
+    // ─── Funções do Modal ───────────────────────────────────────────────────
+    function abrirModal(aba = "login") {
+      document.getElementById("modal-overlay").classList.add("visivel");
+      trocarTab(aba);
+      limparErros();
+    }
 
-    <input id="titulo-receita" placeholder="Título">
-    <textarea id="descricao-receita" placeholder="Descrição"></textarea>
-    <input id="imagem-receita" placeholder="Emoji">
+    function fecharModal() {
+      document.getElementById("modal-overlay").classList.remove("visivel");
+      limparErros();
+    }
 
-    <button onclick="adicionarReceita()">Adicionar</button>
-  </div>
-</div>
+    function fecharModalAoClicarFora(event) {
+      if (event.target === document.getElementById("modal-overlay")) {
+        fecharModal();
+      }
+    }
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+    // Troca entre as abas "login" e "cadastro"
+    function trocarTab(aba) {
+      document.getElementById("tab-login").classList.toggle("ativa",    aba === "login");
+      document.getElementById("tab-cadastro").classList.toggle("ativa", aba === "cadastro");
+      document.getElementById("painel-login").classList.toggle("ativo",    aba === "login");
+      document.getElementById("painel-cadastro").classList.toggle("ativo", aba === "cadastro");
+      limparErros();
+    }
 
+    // Remove classes de erro e esconde mensagens
+    function limparErros() {
+      ["login-nickname", "login-senha", "cadastro-nickname", "cadastro-senha"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("campo-erro");
+      });
+      const erroLogin    = document.getElementById("erro-login");
+      const erroCadastro = document.getElementById("erro-cadastro");
+      const sucCadastro  = document.getElementById("sucesso-cadastro");
+      if (erroLogin)    erroLogin.classList.remove("visivel");
+      if (erroCadastro) erroCadastro.classList.remove("visivel");
+      if (sucCadastro)  sucCadastro.classList.remove("visivel");
+    }
+
+
+    // ─── Login ─────────────────────────────────────────────────────────────
+    async function submeterLogin() {
+      limparErros();
+
+      const nickname = document.getElementById("login-nickname").value.trim();
+      const senha    = document.getElementById("login-senha").value.trim();
+
+      // ===================== TODO (FRONTEND) =====================
+      // TAREFA: Implemente a exibição de erros visuais
+      //
+      // Se os campos estiverem vazios, adicione a classe "campo-erro"
+      // nos inputs correspondentes. Exemplo:
+      //   document.getElementById("login-nickname").classList.add("campo-erro");
+      //
+      // A classe "campo-erro" deve ser estilizada no CSS com borda vermelha.
+      // ===========================================================
+
+      try {
+        const resposta = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nickname, senha })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          // ===================== TODO (FRONTEND) =====================
+          // TAREFA: Exiba a mensagem de erro e aplique borda vermelha
+          //
+          // 1. Mostre dados.erro no elemento #texto-erro-login
+          // 2. Adicione a classe "visivel" em #erro-login
+          // 3. Adicione a classe "campo-erro" nos dois inputs de login
+          // ===========================================================
+          console.error("Erro no login:", dados.erro);
+          return;
+        }
+
+        // Login bem-sucedido
+        usuarioAtual = dados.usuario;
+        atualizarHeader();
+        fecharModal();
+        location.reload(); // Recarrega para refletir permissões de exclusão no Jinja2
+
+      } catch (e) {
+        console.error("Erro de comunicação:", e);
+      }
+    }
+
+
+    // ─── Cadastro ──────────────────────────────────────────────────────────
+    async function submeterCadastro() {
+      limparErros();
+
+      const nickname = document.getElementById("cadastro-nickname").value.trim();
+      const senha    = document.getElementById("cadastro-senha").value.trim();
+
+      try {
+        const resposta = await fetch("/cadastrar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nickname, senha })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+          // ===================== TODO (FRONTEND) =====================
+          // TAREFA: Exiba a mensagem de erro e aplique borda vermelha
+          //
+          // 1. Mostre dados.erro no elemento #texto-erro-cadastro
+          // 2. Adicione a classe "visivel" em #erro-cadastro
+          // 3. Adicione "campo-erro" no campo de nickname e/ou senha
+          //    conforme o tipo de erro
+          // ===========================================================
+          console.error("Erro no cadastro:", dados.erro);
+          return;
+        }
+
+        // Sucesso: mostra mensagem e troca para aba de login
+        const sucesso = document.getElementById("sucesso-cadastro");
+        sucesso.textContent = "✅ " + dados.mensagem + " Faça seu login!";
+        sucesso.classList.add("visivel");
+        document.getElementById("cadastro-nickname").value = "";
+        document.getElementById("cadastro-senha").value    = "";
+        setTimeout(() => trocarTab("login"), 2000);
+
+      } catch (e) {
+        console.error("Erro de comunicação:", e);
+      }
+    }
+
+
+    // ─── Logout ────────────────────────────────────────────────────────────
+    async function fazerLogout() {
+      await fetch("/logout", { method: "POST" });
+      usuarioAtual = null;
+      atualizarHeader();
+      location.reload();
+    }
+
+
+    // ─── Curtir ────────────────────────────────────────────────────────────
+    async function curtir(receitaId, botao) {
+      if (!usuarioAtual) {
+        // ===================== TODO (FRONTEND) =====================
+        // TAREFA: Dispare o modal de login automaticamente
+        //
+        // Quando um usuário não logado tenta curtir,
+        // o modal deve abrir na aba de login.
+        // Use a função abrirModal("login") aqui.
+        // ===========================================================
+        return;
+      }
+
+      try {
+        const resposta = await fetch(`/curtir/${receitaId}`, { method: "POST" });
+        const dados    = await resposta.json();
+
+        if (resposta.ok) {
+          botao.querySelector(".contador-curtida").textContent = dados.total_curtidas;
+          botao.classList.toggle("ativo", dados.curtiu);
+        }
+      } catch (e) {
+        console.error("Erro ao curtir:", e);
+      }
+    }
+
+
+    // ─── Toggle comentários ────────────────────────────────────────────────
+    function toggleComentarios(receitaId) {
+      if (!usuarioAtual) {
+        // ===================== TODO (FRONTEND) =====================
+        // TAREFA: Dispare o modal de login automaticamente
+        // (mesma lógica do curtir)
+        // ===========================================================
+        return;
+      }
+      const secao = document.getElementById(`comentarios-${receitaId}`);
+      secao.classList.toggle("aberta");
+    }
+
+
+    // ─── Enviar comentário ─────────────────────────────────────────────────
+    async function enviarComentario(receitaId) {
+      const input = document.getElementById(`input-comentario-${receitaId}`);
+      const texto = input.value.trim();
+
+      if (!texto) return;
+
+      try {
+        const resposta = await fetch(`/comentar/${receitaId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto })
+        });
+
+        const dados = await resposta.json();
+
+        if (resposta.ok) {
+          input.value = "";
+          const lista = document.getElementById(`lista-${receitaId}`);
+          const novoItem = document.createElement("div");
+          novoItem.classList.add("item-comentario");
+          novoItem.id = `comentario-${dados.comentario.id}`;
+          novoItem.innerHTML = `
+            <div>
+              <div class="comentario-autor">@${dados.comentario.autor_nickname}</div>
+              <div class="comentario-texto">${dados.comentario.texto}</div>
+            </div>
+            <button class="btn btn-perigo" onclick="excluirComentario(${dados.comentario.id})" title="Excluir comentário">🗑</button>
+          `;
+          lista.appendChild(novoItem);
+        }
+      } catch (e) {
+        console.error("Erro ao comentar:", e);
+      }
+    }
+
+
+    // ─── Excluir comentário ────────────────────────────────────────────────
+    async function excluirComentario(comentarioId) {
+      if (!confirm("Tem certeza que deseja excluir este comentário?")) return;
+
+      try {
+        const resposta = await fetch(`/comentario/${comentarioId}`, { method: "DELETE" });
+        const dados    = await resposta.json();
+
+        if (resposta.ok) {
+          const el = document.getElementById(`comentario-${comentarioId}`);
+          if (el) el.remove();
+        } else {
+          alert(dados.erro || "Erro ao excluir comentário.");
+        }
+      } catch (e) {
+        console.error("Erro ao excluir:", e);
+      }
+    }
+
+  </script>
 </body>
 </html>
