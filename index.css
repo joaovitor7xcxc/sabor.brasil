@@ -28,7 +28,7 @@
     /* =====================================================
        HEADER / NAVBAR
        ===================================================== */
-    .topo {
+    header {
       background: var(--laranja);
       padding: 0 2rem;
       height: 68px;
@@ -41,26 +41,40 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     }
 
-    .marca {
+    .logo {
       display: flex;
       align-items: center;
       gap: 10px;
       text-decoration: none;
       color: var(--branco);
     }
-    .marca { font-size: 1.7rem; }
-    .marca strong  { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; color: var(--branco); }
+    .logo-emoji { font-size: 1.7rem; }
+    .logo-text  { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; color: var(--branco); }
 
-    .acoes-topo { display: flex; align-items: center; gap: 10px; }
+    .nav-acoes { display: flex; align-items: center; gap: 10px; }
 
-    #user-info {
+    #info-usuario {
       color: var(--branco);
       font-size: 0.85rem;
       font-weight: 600;
       opacity: 0.9;
     }
+    #badge-perfil {
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--branco);
+      display: none;
+    }
 
-    #btn-login, #btn-cadastrar, #btn-sair {
+    /* =====================================================
+       BOTÕES
+       ===================================================== */
+    .btn {
       padding: 9px 20px;
       border-radius: 8px;
       border: none;
@@ -69,38 +83,76 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
-      background: rgba(255,255,255,0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-branco {
+      background: var(--branco);
+      color: var(--laranja);
+    }
+    .btn-branco:hover { background: #fff3e8; }
+
+    .btn-laranja {
+      background: var(--laranja);
       color: var(--branco);
     }
-    #btn-login:hover, #btn-cadastrar:hover, #btn-sair:hover { background: rgba(255,255,255,0.3); }
+    .btn-laranja:hover { background: var(--laranja-escuro); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--laranja);
+      border: 2px solid var(--laranja);
+    }
+    .btn-outline:hover { background: #fff3e8; }
+
+    .btn-perigo {
+      background: #dc2626;
+      color: var(--branco);
+      font-size: 0.78rem;
+      padding: 5px 10px;
+    }
+    .btn-perigo:hover { background: #b91c1c; }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
     /* =====================================================
        CONTEÚDO PRINCIPAL
        ===================================================== */
-    .conteudo {
+    main {
       max-width: 900px;
       margin: 0 auto;
       padding: 2.5rem 1.5rem;
     }
 
-    .conteudo h1 {
+    .secao-titulo {
       font-size: 1.6rem;
       font-weight: 800;
       color: var(--texto-principal);
       margin-bottom: 0.3rem;
       letter-spacing: -0.5px;
     }
+    .secao-subtitulo {
+      font-size: 0.95rem;
+      color: var(--texto-secundario);
+      margin-bottom: 2rem;
+    }
 
     /* =====================================================
        CARDS DE RECEITA
        ===================================================== */
-    .cards {
+    .grid-receitas {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
     }
 
-    .card {
+    .card-receita {
       background: var(--fundo-card);
       border-radius: 16px;
       border: 1px solid var(--borda);
@@ -108,12 +160,12 @@
       box-shadow: 0 2px 10px var(--sombra);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .card:hover {
+    .card-receita:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 24px var(--sombra);
     }
 
-    .img {
+    .card-imagem {
       background: linear-gradient(135deg, #fff3e8, #fde8cc);
       height: 140px;
       display: flex;
@@ -122,28 +174,28 @@
       font-size: 4rem;
     }
 
-    .info { padding: 1.2rem; }
-    .info h2 {
+    .card-corpo { padding: 1.2rem; }
+    .card-titulo {
       font-size: 1.1rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
       color: var(--texto-principal);
     }
-    .info p {
+    .card-descricao {
       font-size: 0.85rem;
       color: var(--texto-secundario);
       line-height: 1.5;
       margin-bottom: 1rem;
     }
 
-    .acoes {
+    .card-acoes {
       display: flex;
       gap: 8px;
-      padding: 0 1.2rem 1rem 1.2rem;
+      padding-top: 1rem;
       border-top: 1px solid var(--borda);
     }
 
-    .acoes button {
+    .btn-curtir {
       background: none;
       border: 1.5px solid var(--borda);
       border-radius: 8px;
@@ -158,24 +210,46 @@
       gap: 5px;
       transition: all 0.2s;
     }
-    .acoes button:hover {
+    .btn-curtir:hover, .btn-curtir.ativo {
       border-color: var(--laranja);
       color: var(--laranja);
       background: #fff3e8;
     }
 
+    .btn-comentar {
+      background: none;
+      border: 1.5px solid var(--borda);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--texto-secundario);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .btn-comentar:hover { border-color: var(--laranja); color: var(--laranja); }
+
     /* =====================================================
        SEÇÃO DE COMENTÁRIOS (dentro do card)
        ===================================================== */
-    .comentarios {
+    .secao-comentarios {
       border-top: 1px solid var(--borda);
       padding: 1rem 1.2rem;
       display: none;
     }
-    .comentarios.show { display: block; }
+    .secao-comentarios.aberta { display: block; }
 
-    .comentarios input {
-      width: 100%;
+    .form-comentario {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+    .form-comentario input {
+      flex: 1;
       padding: 8px 12px;
       border: 1.5px solid var(--borda);
       border-radius: 8px;
@@ -184,58 +258,31 @@
       outline: none;
       color: var(--texto-principal);
       background: var(--fundo);
-      margin-bottom: 0.5rem;
     }
-    .comentarios input:focus { border-color: var(--laranja); }
+    .form-comentario input:focus { border-color: var(--laranja); }
 
-    .comentarios button {
-      background: var(--laranja);
-      color: var(--branco);
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .comentarios button:hover { background: var(--laranja-escuro); }
-
-    .lista {
-      margin-top: 1rem;
-    }
-    .comentario {
+    .lista-comentarios { display: flex; flex-direction: column; gap: 8px; }
+    .item-comentario {
       background: var(--fundo);
       border-radius: 8px;
       padding: 8px 12px;
       font-size: 0.83rem;
-      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 8px;
     }
-    .comentario b {
+    .comentario-autor {
       font-weight: 700;
       color: var(--laranja);
       font-size: 0.78rem;
     }
-    .comentario p { 
-      color: var(--texto-principal); 
-      margin: 2px 0 0 0; 
-    }
-    .comentario button {
-      background: none;
-      border: none;
-      color: #ff0000;
-      font-size: 0.9rem;
-      cursor: pointer;
-      padding: 0;
-    }
+    .comentario-texto { color: var(--texto-principal); margin-top: 2px; }
 
     /* =====================================================
        MODAL (LOGIN / CADASTRO)
        ===================================================== */
-    .modal {
+    .modal-overlay {
       position: fixed;
       inset: 0;
       background: var(--overlay);
@@ -247,12 +294,12 @@
       pointer-events: none;
       transition: opacity 0.25s ease;
     }
-    .modal.visivel {
+    .modal-overlay.visivel {
       opacity: 1;
       pointer-events: all;
     }
 
-    .box {
+    .modal {
       background: var(--branco);
       border-radius: 20px;
       padding: 2.2rem;
@@ -263,25 +310,77 @@
       transform: translateY(20px);
       transition: transform 0.25s ease;
     }
-    .modal.visivel .box { transform: translateY(0); }
+    .modal-overlay.visivel .modal { transform: translateY(0); }
 
-    .box button:first-child {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
+    .modal-cabecalho {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .modal-titulo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--texto-principal);
+    }
+    .btn-fechar-modal {
       background: none;
       border: none;
       font-size: 1.4rem;
       cursor: pointer;
       color: var(--texto-secundario);
+      padding: 4px;
+      line-height: 1;
     }
-    .box button:first-child:hover { color: var(--texto-principal); }
+    .btn-fechar-modal:hover { color: var(--texto-principal); }
 
-    #login-box, #cadastro-box {
-      margin-top: 2rem;
+    /* =====================================================
+       TABS DO MODAL
+       ===================================================== */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--fundo);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      text-align: center;
+      border: none;
+      background: none;
+      border-radius: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--texto-secundario);
+      transition: all 0.2s;
+    }
+    .tab.ativa {
+      background: var(--laranja);
+      color: var(--branco);
     }
 
-    #login-box input, #cadastro-box input {
+    /* =====================================================
+       FORMULÁRIOS DOS MODAIS
+       ===================================================== */
+    .painel-form { display: none; }
+    .painel-form.ativo { display: block; }
+
+    .grupo-campo { margin-bottom: 1rem; }
+    .grupo-campo label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--texto-secundario);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .grupo-campo input {
       width: 100%;
       padding: 10px 14px;
       border: 1.5px solid var(--borda);
@@ -290,26 +389,10 @@
       font-size: 0.9rem;
       outline: none;
       color: var(--texto-principal);
+      transition: border-color 0.2s;
       background: var(--fundo);
-      margin-bottom: 1rem;
     }
-    #login-box input:focus, #cadastro-box input:focus { border-color: var(--laranja); }
-
-    #login-box button, #cadastro-box button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: var(--laranja);
-      color: var(--branco);
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: background 0.2s;
-    }
-    #login-box button:hover, #cadastro-box button:hover { background: var(--laranja-escuro); }
+    .grupo-campo input:focus { border-color: var(--laranja); }
 
     /*
       =====================================================
@@ -380,34 +463,6 @@
       header { padding: 0 1rem; }
       .logo-text { font-size: 1rem; }
       main { padding: 1.5rem 1rem; }
-
-      .receita-destaque {
-        padding: 1.5rem 1rem;
-      }
-
-      .destaque-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 1.5rem;
-      }
-
-      .destaque-imagem {
-        width: 100px;
-        height: 100px;
-        font-size: 4rem;
-      }
-
-      .destaque-info h3 {
-        font-size: 1.5rem;
-      }
-
-      .destaque-acoes {
-        flex-direction: column;
-      }
-
-      .destaque-acoes button {
-        width: 100%;
-      }
     }
 
     .flash-container {
@@ -443,265 +498,4 @@
     background-color: #f8d7da;
     color: #FF0000;
     border: 1px solid #f5c6cb;
-}
-
-/* =====================================================
-   BOTÃO DELETAR RECEITA (APENAS PARA ADMIN)
-   ===================================================== */
-.btn-deletar {
-  background: #dc2626 !important;
-  color: white !important;
-  border: 1px solid #dc2626 !important;
-  font-size: 0.8rem !important;
-  padding: 5px 8px !important;
-}
-.btn-deletar:hover {
-  background: #b91c1c !important;
-  border-color: #b91c1c !important;
-}
-
-/* =====================================================
-   CABEÇALHO COM BOTÃO ADICIONAR
-   ===================================================== */
-.cabecalho-receitas {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-#btn-adicionar {
-  background: var(--laranja);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-#btn-adicionar:hover { background: var(--laranja-escuro); }
-
-/* =====================================================
-   MODAL ADICIONAR RECEITA
-   ===================================================== */
-#modal-adicionar {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-#modal-adicionar.visivel {
-  opacity: 1;
-  pointer-events: all;
-}
-
-#modal-adicionar .box {
-  background: var(--branco);
-  border-radius: 20px;
-  padding: 2.2rem;
-  width: 100%;
-  max-width: 500px;
-  margin: 1rem;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  transform: translateY(20px);
-  transition: transform 0.25s ease;
-}
-#modal-adicionar.visivel .box { transform: translateY(0); }
-
-#modal-adicionar h2 {
-  margin-bottom: 1.5rem;
-  color: var(--texto-principal);
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-
-#modal-adicionar input, #modal-adicionar textarea {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid var(--borda);
-  border-radius: 9px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  outline: none;
-  color: var(--texto-principal);
-  background: var(--fundo);
-  margin-bottom: 1rem;
-  transition: border-color 0.2s;
-}
-#modal-adicionar input:focus, #modal-adicionar textarea:focus {
-  border-color: var(--laranja);
-}
-
-#modal-adicionar textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-#modal-adicionar button[type="button"] {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  background: var(--laranja);
-  color: var(--branco);
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: background 0.2s;
-}
-#modal-adicionar button[type="button"]:hover { background: var(--laranja-escuro); }
-
-#modal-adicionar button:first-child {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: var(--texto-secundario);
-  padding: 4px;
-  line-height: 1;
-}
-    #modal-adicionar button:first-child:hover { color: var(--texto-principal); }
-
-/* =====================================================
-   ABAS E PAINÉIS DO MODAL
-   ===================================================== */
-.modal-tabs {
-  display: flex;
-  gap: 4px;
-  background: var(--fundo);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 1.5rem;
-}
-
-.tab {
-  flex: 1;
-  padding: 8px;
-  text-align: center;
-  border: none;
-  background: none;
-  border-radius: 7px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--texto-secundario);
-  transition: all 0.2s;
-}
-.tab.active {
-  background: var(--laranja);
-  color: var(--branco);
-}
-
-.modal-panel {
-  display: none;
-}
-.modal-panel.active {
-  display: block;
-}
-
-.modal-panel h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--texto-principal);
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-/* =====================================================
-   RECEITA EM DESTAQUE
-   ===================================================== */
-.receita-destaque {
-  background: linear-gradient(135deg, var(--laranja-claro), var(--laranja));
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(217, 112, 20, 0.2);
-}
-
-.destaque-card {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.destaque-imagem {
-  font-size: 6rem;
-  background: rgba(255,255,255,0.9);
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-.destaque-info {
-  flex: 1;
-  color: var(--branco);
-}
-
-.destaque-info h2 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  opacity: 0.9;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.destaque-info h3 {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.destaque-info p {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-  opacity: 0.95;
-}
-
-.destaque-acoes {
-  display: flex;
-  gap: 1rem;
-}
-
-.destaque-acoes button {
-  padding: 12px 24px;
-  border-radius: 10px;
-  border: 2px solid var(--branco);
-  background: transparent;
-  color: var(--branco);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.destaque-acoes button:hover {
-  background: var(--branco);
-  color: var(--laranja);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
