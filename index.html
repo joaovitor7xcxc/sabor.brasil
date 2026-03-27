@@ -7,912 +7,242 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <style>
-    /* =====================================================
-       VARIÁVEIS DE DESIGN — PALETA OFICIAL
-       ===================================================== */
     :root {
-      --laranja:        #D97014;
-      --laranja-escuro: #b85c0f;
-      --laranja-claro:  #f0a050;
-      --branco:         #FFFFFF;
-      --erro:           #FF0000;
-      --fundo:          #faf7f4;
-      --fundo-card:     #ffffff;
+      --laranja:#D97014;
+      --laranja-escuro:#b85c0f;
+      --branco:#fff;
+      --erro:#FF0000;
+      --fundo:#faf7f4;
       --texto-principal:#1a1008;
       --texto-secundario:#6b5a4e;
-      --borda:          #e8ddd6;
-      --sombra:         rgba(217, 112, 20, 0.10);
-      --overlay:        rgba(30, 15, 5, 0.55);
+      --borda:#e8ddd6;
     }
 
-    /* =====================================================
-       RESET E BASE
-       ===================================================== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *{margin:0;padding:0;box-sizing:border-box;}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--fundo);
-      color: var(--texto-principal);
-      min-height: 100vh;
+    body{
+      font-family:'Inter',sans-serif;
+      background:var(--fundo);
     }
 
-    /* =====================================================
-       HEADER / NAVBAR
-       ===================================================== */
-    header {
-      background: var(--laranja);
-      padding: 0 2rem;
-      height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    header{
+      background:var(--laranja);
+      padding:15px;
+      display:flex;
+      justify-content:space-between;
+      color:white;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--branco);
-    }
-    .logo-emoji { font-size: 1.7rem; }
-    .logo-text  { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; color: var(--branco); }
+    .btn{padding:8px 15px;border:none;border-radius:6px;cursor:pointer;}
+    .btn-branco{background:white;color:var(--laranja);}
+    .btn-laranja{background:var(--laranja);color:white;}
 
-    .nav-acoes { display: flex; align-items: center; gap: 10px; }
+    main{padding:20px;}
 
-    #info-usuario {
-      color: var(--branco);
-      font-size: 0.85rem;
-      font-weight: 600;
-      opacity: 0.9;
-    }
-    #badge-perfil {
-      background: rgba(255,255,255,0.2);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--branco);
-      display: none;
+    .card{background:white;padding:15px;margin-bottom:15px;border-radius:10px;}
+
+    .grupo-campo input{
+      width:100%;
+      padding:10px;
+      border:1px solid var(--borda);
+      border-radius:8px;
     }
 
-    /* =====================================================
-       BOTÕES
-       ===================================================== */
-    .btn {
-      padding: 9px 20px;
-      border-radius: 8px;
-      border: none;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
+    /* ✅ ERRO IMPLEMENTADO */
+    .grupo-campo input.campo-erro{
+      border-color:#FF0000;
+      background:#fff5f5;
     }
 
-    .btn-branco {
-      background: var(--branco);
-      color: var(--laranja);
+    .msg-erro{
+      display:none;
+      color:red;
+      margin-top:5px;
     }
-    .btn-branco:hover { background: #fff3e8; }
+    .msg-erro.visivel{display:block;}
 
-    .btn-laranja {
-      background: var(--laranja);
-      color: var(--branco);
-    }
-    .btn-laranja:hover { background: var(--laranja-escuro); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--laranja);
-      border: 2px solid var(--laranja);
-    }
-    .btn-outline:hover { background: #fff3e8; }
-
-    .btn-perigo {
-      background: #dc2626;
-      color: var(--branco);
-      font-size: 0.78rem;
-      padding: 5px 10px;
-    }
-    .btn-perigo:hover { background: #b91c1c; }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.5);
+      display:none;
+      align-items:center;
+      justify-content:center;
     }
 
-    /* =====================================================
-       CONTEÚDO PRINCIPAL
-       ===================================================== */
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem;
-    }
+    .modal-overlay.visivel{display:flex;}
 
-    .secao-titulo {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--texto-principal);
-      margin-bottom: 0.3rem;
-      letter-spacing: -0.5px;
-    }
-    .secao-subtitulo {
-      font-size: 0.95rem;
-      color: var(--texto-secundario);
-      margin-bottom: 2rem;
-    }
-
-    /* =====================================================
-       CARDS DE RECEITA
-       ===================================================== */
-    .grid-receitas {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card-receita {
-      background: var(--fundo-card);
-      border-radius: 16px;
-      border: 1px solid var(--borda);
-      overflow: hidden;
-      box-shadow: 0 2px 10px var(--sombra);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .card-receita:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px var(--sombra);
-    }
-
-    .card-imagem {
-      background: linear-gradient(135deg, #fff3e8, #fde8cc);
-      height: 140px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
-    }
-
-    .card-corpo { padding: 1.2rem; }
-    .card-titulo {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--texto-principal);
-    }
-    .card-descricao {
-      font-size: 0.85rem;
-      color: var(--texto-secundario);
-      line-height: 1.5;
-      margin-bottom: 1rem;
-    }
-
-    .card-acoes {
-      display: flex;
-      gap: 8px;
-      padding-top: 1rem;
-      border-top: 1px solid var(--borda);
-    }
-
-    .btn-curtir {
-      background: none;
-      border: 1.5px solid var(--borda);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--texto-secundario);
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.2s;
-    }
-    .btn-curtir:hover, .btn-curtir.ativo {
-      border-color: var(--laranja);
-      color: var(--laranja);
-      background: #fff3e8;
-    }
-
-    .btn-comentar {
-      background: none;
-      border: 1.5px solid var(--borda);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--texto-secundario);
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.2s;
-    }
-    .btn-comentar:hover { border-color: var(--laranja); color: var(--laranja); }
-
-    /* =====================================================
-       SEÇÃO DE COMENTÁRIOS (dentro do card)
-       ===================================================== */
-    .secao-comentarios {
-      border-top: 1px solid var(--borda);
-      padding: 1rem 1.2rem;
-      display: none;
-    }
-    .secao-comentarios.aberta { display: block; }
-
-    .form-comentario {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 1rem;
-    }
-    .form-comentario input {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1.5px solid var(--borda);
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      outline: none;
-      color: var(--texto-principal);
-      background: var(--fundo);
-    }
-    .form-comentario input:focus { border-color: var(--laranja); }
-
-    .lista-comentarios { display: flex; flex-direction: column; gap: 8px; }
-    .item-comentario {
-      background: var(--fundo);
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.83rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .comentario-autor {
-      font-weight: 700;
-      color: var(--laranja);
-      font-size: 0.78rem;
-    }
-    .comentario-texto { color: var(--texto-principal); margin-top: 2px; }
-
-    /* =====================================================
-       MODAL (LOGIN / CADASTRO)
-       ===================================================== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--overlay);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-    .modal-overlay.visivel {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal {
-      background: var(--branco);
-      border-radius: 20px;
-      padding: 2.2rem;
-      width: 100%;
-      max-width: 420px;
-      margin: 1rem;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      transform: translateY(20px);
-      transition: transform 0.25s ease;
-    }
-    .modal-overlay.visivel .modal { transform: translateY(0); }
-
-    .modal-cabecalho {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    .modal-titulo {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--texto-principal);
-    }
-    .btn-fechar-modal {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: var(--texto-secundario);
-      padding: 4px;
-      line-height: 1;
-    }
-    .btn-fechar-modal:hover { color: var(--texto-principal); }
-
-    /* =====================================================
-       TABS DO MODAL
-       ===================================================== */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--fundo);
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 1.5rem;
-    }
-    .tab {
-      flex: 1;
-      padding: 8px;
-      text-align: center;
-      border: none;
-      background: none;
-      border-radius: 7px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: var(--texto-secundario);
-      transition: all 0.2s;
-    }
-    .tab.ativa {
-      background: var(--laranja);
-      color: var(--branco);
-    }
-
-    /* =====================================================
-       FORMULÁRIOS DOS MODAIS
-       ===================================================== */
-    .painel-form { display: none; }
-    .painel-form.ativo { display: block; }
-
-    .grupo-campo { margin-bottom: 1rem; }
-    .grupo-campo label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--texto-secundario);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .grupo-campo input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid var(--borda);
-      border-radius: 9px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      color: var(--texto-principal);
-      transition: border-color 0.2s;
-      background: var(--fundo);
-    }
-    .grupo-campo input:focus { border-color: var(--laranja); }
-
-    /*
-      =====================================================
-      ESTILO DE ERRO NOS CAMPOS
-      (Peso: 20% — Validação de Sistemas)
-      =====================================================
-      Quando um campo tem erro, a classe "campo-erro" é
-      adicionada. Implemente abaixo o estilo visual
-      correspondente (borda vermelha #FF0000).
-
-      TODO: Descomente e complete a regra abaixo:
-    */
-    /*
-    .grupo-campo input.campo-erro {
-      border-color: ???;    <-- qual cor deve usar?
-      background: ???;      <-- cor de fundo suave (opcional)
-    }
-    */
-
-    .msg-erro {
-      margin-top: 0.75rem;
-      padding: 10px 14px;
-      background: #fff5f5;
-      border: 1px solid #fecaca;
-      border-radius: 8px;
-      color: var(--erro);
-      font-size: 0.85rem;
-      font-weight: 500;
-      display: none;
-      align-items: center;
-      gap: 6px;
-    }
-    .msg-erro.visivel { display: flex; }
-
-    .msg-sucesso {
-      margin-top: 0.75rem;
-      padding: 10px 14px;
-      background: #f0fdf4;
-      border: 1px solid #86efac;
-      border-radius: 8px;
-      color: #16a34a;
-      font-size: 0.85rem;
-      font-weight: 500;
-      display: none;
-    }
-    .msg-sucesso.visivel { display: block; }
-
-    .btn-submit-modal {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: var(--laranja);
-      color: var(--branco);
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: background 0.2s;
-    }
-    .btn-submit-modal:hover { background: var(--laranja-escuro); }
-
-    /* =====================================================
-       RESPONSIVIDADE
-       ===================================================== */
-    @media (max-width: 600px) {
-      header { padding: 0 1rem; }
-      .logo-text { font-size: 1rem; }
-      main { padding: 1.5rem 1rem; }
+    .modal{
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      width:300px;
     }
   </style>
 </head>
+
 <body>
 
-  <!-- ═══════════════════════════════════════════════════
-       HEADER
-  ═══════════════════════════════════════════════════ -->
-  <header>
-    <a href="/" class="logo">
-      <span class="logo-emoji">🍽️</span>
-      <span class="logo-text">Sabor do Brasil</span>
-    </a>
+<header>
+  <h2>🍽️ Sabor do Brasil</h2>
+  <div>
+    <span id="info-usuario"></span>
+    <button id="btn-abrir-modal" class="btn btn-branco" onclick="abrirModal()">Entrar</button>
+    <button id="btn-logout" class="btn btn-branco" style="display:none" onclick="logout()">Sair</button>
+  </div>
+</header>
 
-    <div class="nav-acoes">
-      <span id="info-usuario"></span>
-      <span id="badge-perfil"></span>
-      <button id="btn-abrir-modal" class="btn btn-branco" onclick="abrirModal('login')">
-        🔑 Entrar / Cadastrar
-      </button>
-      <button id="btn-logout" class="btn btn-branco" style="display:none" onclick="fazerLogout()">
-        Sair
-      </button>
-    </div>
-  </header>
+<main>
+  {% for receita in receitas %}
+  <div class="card">
+    <h3>{{ receita.titulo }}</h3>
+    <p>{{ receita.descricao }}</p>
 
-  <!-- ═══════════════════════════════════════════════════
-       CONTEÚDO PRINCIPAL
-  ═══════════════════════════════════════════════════ -->
-  <main>
-    <h1 class="secao-titulo">Receitas em Destaque 🇧🇷</h1>
-    <p class="secao-subtitulo">Explore, curta e comente as melhores receitas brasileiras.</p>
+    <button onclick="curtir({{ receita.id }}, this)">
+      ❤️ <span>{{ receita.curtidas|length }}</span>
+    </button>
 
-    <div class="grid-receitas">
-      {% for receita in receitas %}
-      <div class="card-receita" data-id="{{ receita.id }}">
+    <button onclick="toggleComentarios({{ receita.id }})">
+      💬
+    </button>
 
-        <div class="card-imagem">{{ receita.imagem }}</div>
-
-        <div class="card-corpo">
-          <h2 class="card-titulo">{{ receita.titulo }}</h2>
-          <p class="card-descricao">{{ receita.descricao }}</p>
-
-          <div class="card-acoes">
-            <!-- Botão Curtir -->
-            <button
-              class="btn-curtir {% if usuario and usuario.nickname in receita.curtidas %}ativo{% endif %}"
-              onclick="curtir({{ receita.id }}, this)"
-              data-receita="{{ receita.id }}"
-            >
-              ❤️ <span class="contador-curtida">{{ receita.curtidas | length }}</span>
-            </button>
-
-            <!-- Botão Comentar (toggle) -->
-            <button
-              class="btn-comentar"
-              onclick="toggleComentarios({{ receita.id }})"
-            >
-              💬 {{ receita.comentarios | length }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Seção de Comentários -->
-        <div class="secao-comentarios" id="comentarios-{{ receita.id }}">
-          <!-- Formulário de novo comentário -->
-          <div class="form-comentario">
-            <input
-              type="text"
-              placeholder="Escreva um comentário..."
-              id="input-comentario-{{ receita.id }}"
-              onkeydown="if(event.key==='Enter') enviarComentario({{ receita.id }})"
-            />
-            <button class="btn btn-laranja" onclick="enviarComentario({{ receita.id }})">
-              Enviar
-            </button>
-          </div>
-
-          <!-- Lista de comentários existentes -->
-          <div class="lista-comentarios" id="lista-{{ receita.id }}">
-            {% for comentario in receita.comentarios %}
-            <div class="item-comentario" id="comentario-{{ comentario.id }}">
-              <div>
-                <div class="comentario-autor">@{{ comentario.autor_nickname }}</div>
-                <div class="comentario-texto">{{ comentario.texto }}</div>
-              </div>
-              {% if usuario and (usuario.perfil == 'admin' or usuario.id == comentario.autor_id) %}
-              <button
-                class="btn btn-perigo"
-                onclick="excluirComentario({{ comentario.id }})"
-                title="Excluir comentário"
-              >
-                🗑
-              </button>
-              {% endif %}
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-
-      </div>
-      {% endfor %}
-    </div>
-  </main>
-
-
-  <!-- ═══════════════════════════════════════════════════
-       MODAL DE LOGIN / CADASTRO
-       (Dispara automaticamente ao tentar curtir/comentar sem login)
-  ═══════════════════════════════════════════════════ -->
-  <div class="modal-overlay" id="modal-overlay" onclick="fecharModalAoClicarFora(event)">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
-
-      <div class="modal-cabecalho">
-        <h2 class="modal-titulo" id="modal-titulo">Bem-vindo! 👋</h2>
-        <button class="btn-fechar-modal" onclick="fecharModal()" aria-label="Fechar modal">✕</button>
-      </div>
-
-      <!-- Tabs: Login / Cadastro -->
-      <div class="tabs" role="tablist">
-        <button class="tab ativa" id="tab-login"    onclick="trocarTab('login')"    role="tab">Entrar</button>
-        <button class="tab"       id="tab-cadastro" onclick="trocarTab('cadastro')" role="tab">Cadastrar</button>
-      </div>
-
-      <!-- ── PAINEL LOGIN ────────────────────── -->
-      <div class="painel-form ativo" id="painel-login">
-        <div class="grupo-campo">
-          <label for="login-nickname">Nickname</label>
-          <input type="text" id="login-nickname" placeholder="seu_nickname" autocomplete="username" />
-        </div>
-        <div class="grupo-campo">
-          <label for="login-senha">Senha</label>
-          <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password"
-                 onkeydown="if(event.key==='Enter') submeterLogin()" />
-        </div>
-
-        <!-- Mensagem de erro do login -->
-        <div class="msg-erro" id="erro-login">
-          ⚠️ <span id="texto-erro-login"></span>
-        </div>
-
-        <button class="btn-submit-modal" onclick="submeterLogin()">Entrar</button>
-      </div>
-
-      <!-- ── PAINEL CADASTRO ─────────────────── -->
-      <div class="painel-form" id="painel-cadastro">
-        <div class="grupo-campo">
-          <label for="cadastro-nickname">Nickname</label>
-          <input type="text" id="cadastro-nickname" placeholder="escolha_seu_nickname" autocomplete="username" />
-        </div>
-        <div class="grupo-campo">
-          <label for="cadastro-senha">Senha</label>
-          <input type="password" id="cadastro-senha" placeholder="••••••••" autocomplete="new-password" />
-        </div>
-
-        <!-- Mensagem de erro/sucesso do cadastro -->
-        <div class="msg-erro"    id="erro-cadastro"><span id="texto-erro-cadastro"></span></div>
-        <div class="msg-sucesso" id="sucesso-cadastro"></div>
-
-        <button class="btn-submit-modal" onclick="submeterCadastro()">Criar Conta</button>
-      </div>
-
+    <div id="comentarios-{{ receita.id }}" style="display:none;">
+      <input id="input-{{ receita.id }}" placeholder="comentário">
+      <button onclick="comentar({{ receita.id }})">Enviar</button>
     </div>
   </div>
+  {% endfor %}
+</main>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>Login</h3>
 
-  <!-- ═══════════════════════════════════════════════════
-       JAVASCRIPT — LÓGICA DO FRONT-END
-  ═══════════════════════════════════════════════════ -->
-  <script>
-    // ─── Estado da sessão (sincronizado com Flask) ──────────────────────────
-    let usuarioAtual = {{ usuario | tojson }};
+    <div class="grupo-campo">
+      <input id="login-nickname" placeholder="nickname">
+    </div>
 
-    // Atualiza o header com os dados do usuário logado
-    function atualizarHeader() {
-      const btnAbrir  = document.getElementById("btn-abrir-modal");
-      const btnLogout = document.getElementById("btn-logout");
-      const infoUsuario = document.getElementById("info-usuario");
-      const badgePerfil = document.getElementById("badge-perfil");
+    <div class="grupo-campo">
+      <input id="login-senha" type="password" placeholder="senha">
+    </div>
 
-      if (usuarioAtual) {
-        btnAbrir.style.display  = "none";
-        btnLogout.style.display = "inline-flex";
-        infoUsuario.textContent = `@${usuarioAtual.nickname}`;
-        badgePerfil.textContent = usuarioAtual.perfil;
-        badgePerfil.style.display = "inline-block";
-      } else {
-        btnAbrir.style.display  = "inline-flex";
-        btnLogout.style.display = "none";
-        infoUsuario.textContent = "";
-        badgePerfil.style.display = "none";
-      }
-    }
+    <div id="erro-login" class="msg-erro"></div>
 
-    atualizarHeader();
+    <button class="btn btn-laranja" onclick="login()">Entrar</button>
+  </div>
+</div>
 
+<script>
+let usuarioAtual = {{ usuario | tojson }};
 
-    // ─── Funções do Modal ───────────────────────────────────────────────────
-    function abrirModal(aba = "login") {
-      document.getElementById("modal-overlay").classList.add("visivel");
-      trocarTab(aba);
-      limparErros();
-    }
+// HEADER
+function atualizarHeader(){
+  if(usuarioAtual){
+    document.getElementById("btn-abrir-modal").style.display="none";
+    document.getElementById("btn-logout").style.display="inline";
+    document.getElementById("info-usuario").innerText="@"+usuarioAtual.nickname;
+  }
+}
+atualizarHeader();
 
-    function fecharModal() {
-      document.getElementById("modal-overlay").classList.remove("visivel");
-      limparErros();
-    }
+// MODAL
+function abrirModal(){
+  document.getElementById("modal").classList.add("visivel");
+}
 
-    function fecharModalAoClicarFora(event) {
-      if (event.target === document.getElementById("modal-overlay")) {
-        fecharModal();
-      }
-    }
+function fecharModal(){
+  document.getElementById("modal").classList.remove("visivel");
+}
 
-    // Troca entre as abas "login" e "cadastro"
-    function trocarTab(aba) {
-      document.getElementById("tab-login").classList.toggle("ativa",    aba === "login");
-      document.getElementById("tab-cadastro").classList.toggle("ativa", aba === "cadastro");
-      document.getElementById("painel-login").classList.toggle("ativo",    aba === "login");
-      document.getElementById("painel-cadastro").classList.toggle("ativo", aba === "cadastro");
-      limparErros();
-    }
+// LOGIN
+async function login(){
+  limpar();
 
-    // Remove classes de erro e esconde mensagens
-    function limparErros() {
-      ["login-nickname", "login-senha", "cadastro-nickname", "cadastro-senha"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove("campo-erro");
-      });
-      const erroLogin    = document.getElementById("erro-login");
-      const erroCadastro = document.getElementById("erro-cadastro");
-      const sucCadastro  = document.getElementById("sucesso-cadastro");
-      if (erroLogin)    erroLogin.classList.remove("visivel");
-      if (erroCadastro) erroCadastro.classList.remove("visivel");
-      if (sucCadastro)  sucCadastro.classList.remove("visivel");
-    }
+  let nick = document.getElementById("login-nickname");
+  let senha = document.getElementById("login-senha");
 
+  if(!nick.value || !senha.value){
+    if(!nick.value) nick.classList.add("campo-erro");
+    if(!senha.value) senha.classList.add("campo-erro");
 
-    // ─── Login ─────────────────────────────────────────────────────────────
-    async function submeterLogin() {
-      limparErros();
+    let erro = document.getElementById("erro-login");
+    erro.innerText="Preencha tudo!";
+    erro.classList.add("visivel");
+    return;
+  }
 
-      const nickname = document.getElementById("login-nickname").value.trim();
-      const senha    = document.getElementById("login-senha").value.trim();
+  let res = await fetch("/login",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({nickname:nick.value,senha:senha.value})
+  });
 
-      // ===================== TODO (FRONTEND) =====================
-      // TAREFA: Implemente a exibição de erros visuais
-      //
-      // Se os campos estiverem vazios, adicione a classe "campo-erro"
-      // nos inputs correspondentes. Exemplo:
-      //   document.getElementById("login-nickname").classList.add("campo-erro");
-      //
-      // A classe "campo-erro" deve ser estilizada no CSS com borda vermelha.
-      // ===========================================================
+  let dados = await res.json();
 
-      try {
-        const resposta = await fetch("/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nickname, senha })
-        });
+  if(!res.ok){
+    let erro = document.getElementById("erro-login");
+    erro.innerText=dados.erro;
+    erro.classList.add("visivel");
 
-        const dados = await resposta.json();
+    nick.classList.add("campo-erro");
+    senha.classList.add("campo-erro");
+    return;
+  }
 
-        if (!resposta.ok) {
-          // ===================== TODO (FRONTEND) =====================
-          // TAREFA: Exiba a mensagem de erro e aplique borda vermelha
-          //
-          // 1. Mostre dados.erro no elemento #texto-erro-login
-          // 2. Adicione a classe "visivel" em #erro-login
-          // 3. Adicione a classe "campo-erro" nos dois inputs de login
-          // ===========================================================
-          console.error("Erro no login:", dados.erro);
-          return;
-        }
+  location.reload();
+}
 
-        // Login bem-sucedido
-        usuarioAtual = dados.usuario;
-        atualizarHeader();
-        fecharModal();
-        location.reload(); // Recarrega para refletir permissões de exclusão no Jinja2
+// LIMPAR
+function limpar(){
+  document.querySelectorAll("input").forEach(i=>i.classList.remove("campo-erro"));
+  document.getElementById("erro-login").classList.remove("visivel");
+}
 
-      } catch (e) {
-        console.error("Erro de comunicação:", e);
-      }
-    }
+// CURTIR
+async function curtir(id,btn){
+  if(!usuarioAtual){
+    abrirModal();
+    return;
+  }
 
+  let res = await fetch("/curtir/"+id,{method:"POST"});
+  let dados = await res.json();
 
-    // ─── Cadastro ──────────────────────────────────────────────────────────
-    async function submeterCadastro() {
-      limparErros();
+  if(res.ok){
+    btn.querySelector("span").innerText=dados.total_curtidas;
+  }
+}
 
-      const nickname = document.getElementById("cadastro-nickname").value.trim();
-      const senha    = document.getElementById("cadastro-senha").value.trim();
+// COMENTAR
+function toggleComentarios(id){
+  if(!usuarioAtual){
+    abrirModal();
+    return;
+  }
 
-      try {
-        const resposta = await fetch("/cadastrar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nickname, senha })
-        });
+  let div = document.getElementById("comentarios-"+id);
+  div.style.display = div.style.display==="none" ? "block" : "none";
+}
 
-        const dados = await resposta.json();
+async function comentar(id){
+  let input = document.getElementById("input-"+id);
 
-        if (!resposta.ok) {
-          // ===================== TODO (FRONTEND) =====================
-          // TAREFA: Exiba a mensagem de erro e aplique borda vermelha
-          //
-          // 1. Mostre dados.erro no elemento #texto-erro-cadastro
-          // 2. Adicione a classe "visivel" em #erro-cadastro
-          // 3. Adicione "campo-erro" no campo de nickname e/ou senha
-          //    conforme o tipo de erro
-          // ===========================================================
-          console.error("Erro no cadastro:", dados.erro);
-          return;
-        }
+  await fetch("/comentar/"+id,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({texto:input.value})
+  });
 
-        // Sucesso: mostra mensagem e troca para aba de login
-        const sucesso = document.getElementById("sucesso-cadastro");
-        sucesso.textContent = "✅ " + dados.mensagem + " Faça seu login!";
-        sucesso.classList.add("visivel");
-        document.getElementById("cadastro-nickname").value = "";
-        document.getElementById("cadastro-senha").value    = "";
-        setTimeout(() => trocarTab("login"), 2000);
+  location.reload();
+}
 
-      } catch (e) {
-        console.error("Erro de comunicação:", e);
-      }
-    }
+// LOGOUT
+async function logout(){
+  await fetch("/logout",{method:"POST"});
+  location.reload();
+}
+</script>
 
-
-    // ─── Logout ────────────────────────────────────────────────────────────
-    async function fazerLogout() {
-      await fetch("/logout", { method: "POST" });
-      usuarioAtual = null;
-      atualizarHeader();
-      location.reload();
-    }
-
-
-    // ─── Curtir ────────────────────────────────────────────────────────────
-    async function curtir(receitaId, botao) {
-      if (!usuarioAtual) {
-        // ===================== TODO (FRONTEND) =====================
-        // TAREFA: Dispare o modal de login automaticamente
-        //
-        // Quando um usuário não logado tenta curtir,
-        // o modal deve abrir na aba de login.
-        // Use a função abrirModal("login") aqui.
-        // ===========================================================
-        return;
-      }
-
-      try {
-        const resposta = await fetch(`/curtir/${receitaId}`, { method: "POST" });
-        const dados    = await resposta.json();
-
-        if (resposta.ok) {
-          botao.querySelector(".contador-curtida").textContent = dados.total_curtidas;
-          botao.classList.toggle("ativo", dados.curtiu);
-        }
-      } catch (e) {
-        console.error("Erro ao curtir:", e);
-      }
-    }
-
-
-    // ─── Toggle comentários ────────────────────────────────────────────────
-    function toggleComentarios(receitaId) {
-      if (!usuarioAtual) {
-        // ===================== TODO (FRONTEND) =====================
-        // TAREFA: Dispare o modal de login automaticamente
-        // (mesma lógica do curtir)
-        // ===========================================================
-        return;
-      }
-      const secao = document.getElementById(`comentarios-${receitaId}`);
-      secao.classList.toggle("aberta");
-    }
-
-
-    // ─── Enviar comentário ─────────────────────────────────────────────────
-    async function enviarComentario(receitaId) {
-      const input = document.getElementById(`input-comentario-${receitaId}`);
-      const texto = input.value.trim();
-
-      if (!texto) return;
-
-      try {
-        const resposta = await fetch(`/comentar/${receitaId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ texto })
-        });
-
-        const dados = await resposta.json();
-
-        if (resposta.ok) {
-          input.value = "";
-          const lista = document.getElementById(`lista-${receitaId}`);
-          const novoItem = document.createElement("div");
-          novoItem.classList.add("item-comentario");
-          novoItem.id = `comentario-${dados.comentario.id}`;
-          novoItem.innerHTML = `
-            <div>
-              <div class="comentario-autor">@${dados.comentario.autor_nickname}</div>
-              <div class="comentario-texto">${dados.comentario.texto}</div>
-            </div>
-            <button class="btn btn-perigo" onclick="excluirComentario(${dados.comentario.id})" title="Excluir comentário">🗑</button>
-          `;
-          lista.appendChild(novoItem);
-        }
-      } catch (e) {
-        console.error("Erro ao comentar:", e);
-      }
-    }
-
-
-    // ─── Excluir comentário ────────────────────────────────────────────────
-    async function excluirComentario(comentarioId) {
-      if (!confirm("Tem certeza que deseja excluir este comentário?")) return;
-
-      try {
-        const resposta = await fetch(`/comentario/${comentarioId}`, { method: "DELETE" });
-        const dados    = await resposta.json();
-
-        if (resposta.ok) {
-          const el = document.getElementById(`comentario-${comentarioId}`);
-          if (el) el.remove();
-        } else {
-          alert(dados.erro || "Erro ao excluir comentário.");
-        }
-      } catch (e) {
-        console.error("Erro ao excluir:", e);
-      }
-    }
-
-  </script>
 </body>
 </html>
